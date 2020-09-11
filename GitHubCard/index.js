@@ -3,7 +3,8 @@
     (replacing the placeholder with your Github name):
     https://api.github.com/users/<your name>
 */
-
+const axiosPromise = axios.get("https://api.github.com/users/evllz");
+console.log(axiosPromise)
 /*
   STEP 2: Inspect and study the data coming back, this is YOUR
     github info! You will need to understand the structure of this
@@ -28,7 +29,7 @@
     user, and adding that card to the DOM.
 */
 
-const followersArray = [];
+const followersArray = ["https://api.github.com/users/rmjuarez12", "https://api.github.com/users/eddiemadrigal", "https://api.github.com/users/tetondan","https://api.github.com/users/dustinmyers","https://api.github.com/users/justsml","https://api.github.com/users/luishrd","https://api.github.com/users/bigknell"];
 
 /*
   STEP 3: Create a function that accepts a single object as its only argument.
@@ -58,3 +59,78 @@ const followersArray = [];
     luishrd
     bigknell
 */
+
+function profile(object){
+  const div = document.createElement('div')
+  div.classList.add('card');
+  const img = document.createElement('img');
+  img.src = object.data.avatar_url;
+  div.appendChild(img);
+  const infodiv = document.createElement('div');
+  infodiv.classList.add('card-info');
+    const h3 = document.createElement('h3');
+    h3.classList.add('name');
+    h3.textContent = object.data.login;
+    infodiv.appendChild(h3);
+    const p = document.createElement('p');
+    p.classList.add('username');
+    p.textContent = object.data.name;
+    infodiv.appendChild(p);
+    const location = document.createElement('p');
+    location.textContent = `Location: ${object.data.location}`;
+    infodiv.appendChild(location);
+    const profileUrl = document.createElement('p');
+    profileUrl.textContent = 'Profile: ';
+      const a = document.createElement('a');
+      a.href = object.data.html_url;
+      a.textContent = object.data.html_url;
+      profileUrl.appendChild(a);
+    infodiv.appendChild(profileUrl);
+    const followers = document.createElement('p');
+    followers.textContent = object.data.followers;
+    infodiv.appendChild(followers);
+    const following = document.createElement('p');
+    followers.textContent = object.data.following;
+    infodiv.appendChild(following);
+    const bio = document.createElement('p');
+    followers.textContent = object.data.bio;
+    infodiv.appendChild(bio);
+  div.appendChild(infodiv);
+  return div;
+}
+
+axios.get("https://api.github.com/users/evllz")
+     .then((r)=>{
+       const profileCard = profile(r);
+       console.log(profileCard)
+       const cardsdiv = document.querySelector('.cards');
+       cardsdiv.appendChild(profileCard);
+     })
+
+followersArray.forEach(element =>{
+  axios.get(element)
+     .then((r)=>{
+       const profileCard = profile(r);
+       console.log(profileCard)
+       const cardsdiv = document.querySelector('.cards');
+       cardsdiv.appendChild(profileCard);
+     })
+})
+
+axios.get("https://api.github.com/users/tetondan")
+    .then((r) => {
+      axios.get(r.data.followers_url)
+          .then(r => {
+            r.data.forEach(element => {
+              const profileAPI = element.url;
+              axios.get(profileAPI)
+              .then((r)=>{
+                const profileCard = profile(r);
+                console.log(profileCard)
+                const cardsdiv = document.querySelector('.cards');
+                cardsdiv.appendChild(profileCard);
+              })
+              
+            })
+          })
+    })
